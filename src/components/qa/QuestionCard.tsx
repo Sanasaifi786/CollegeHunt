@@ -9,7 +9,6 @@ import {
   Bookmark,
   MoreHorizontal,
   CheckCircle2,
-  GraduationCap,
 } from "lucide-react";
 
 export interface DiscussionItem {

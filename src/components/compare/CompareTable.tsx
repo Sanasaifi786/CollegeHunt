@@ -1,9 +1,7 @@
 "use client";
 
-import { useState } from "react";
 import {
   IndianRupee,
-  GraduationCap,
   Users,
   Briefcase,
   Trophy,
@@ -12,7 +10,6 @@ import {
   X,
   Plus,
   Star,
-  CheckCircle2,
 } from "lucide-react";
 import { CollegeCard } from "@/types";
 import { formatCurrency } from "@/lib/utils";
@@ -34,8 +31,6 @@ export default function CompareTable({
   const minFees = Math.min(...colleges.map((c) => c.annualFees || 9999999));
   // Determine winner for ranking (lowest rank number is best)
   const bestRank = Math.min(...colleges.map((c) => c.ranking || 999));
-  // Determine winner for rating (highest is best)
-  const maxRating = Math.max(...colleges.map((c) => c.avgRating || 0));
 
   const mockVibes: Record<string, string[]> = {
     "col-1": ["Research Heavy", "Startups Hub", "Competitive"],

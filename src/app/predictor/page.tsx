@@ -6,10 +6,6 @@ import {
   CheckCircle2,
   AlertTriangle,
   ArrowRight,
-  Sparkles,
-  Award,
-  GraduationCap,
-  TrendingUp,
 } from "lucide-react";
 import { MOCK_COLLEGES, COLLEGE_IMAGE_MAP } from "@/lib/mock-data";
 import ChanceBadge from "@/components/predictor/ChanceBadge";

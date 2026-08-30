@@ -104,7 +104,7 @@ export async function GET(req: NextRequest) {
             college.reviews.length
           : null;
 
-      const { reviews, ...rest } = college;
+      const { reviews: _reviews, ...rest } = college;
       return { ...rest, avgRating: avgRating ? Math.round(avgRating * 10) / 10 : null };
     });
 

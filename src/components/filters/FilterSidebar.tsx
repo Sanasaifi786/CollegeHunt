@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { Filter, RotateCcw } from "lucide-react";
 import { CollegeType } from "@/types";
 

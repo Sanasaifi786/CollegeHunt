@@ -6,7 +6,6 @@ import CompareTable from "@/components/compare/CompareTable";
 import { MOCK_COLLEGES } from "@/lib/mock-data";
 import { Scale, Plus, Bookmark, Check, ArrowRight } from "lucide-react";
 import Link from "next/link";
-import { CollegeCard } from "@/types";
 
 export default function ComparePage() {
   const { selectedColleges, removeCollege, addCollege, clearColleges } = useCompareStore();

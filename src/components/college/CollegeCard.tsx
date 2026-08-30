@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, MapPin, Bookmark, Check, Plus, Scale } from "lucide-react";
+import { ArrowRight, MapPin, Bookmark, Scale } from "lucide-react";
 import { CollegeCard as CollegeCardType } from "@/types";
 import RatingBadge from "./RatingBadge";
 import { formatCurrency } from "@/lib/utils";
@@ -15,7 +15,7 @@ interface CollegeCardProps {
   featured?: boolean;
 }
 
-export default function CollegeCard({ college, matchScore, featured }: CollegeCardProps) {
+export default function CollegeCard({ college, matchScore }: CollegeCardProps) {
   const { addCollege, removeCollege, isComparing } = useCompareStore();
   const [comparing, setComparing] = useState(false);
   const [saved, setSaved] = useState(false);

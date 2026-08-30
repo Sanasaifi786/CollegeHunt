@@ -183,7 +183,7 @@ export default function SavedPage() {
           ))}
           {savedComparisons.length === 0 && (
             <div className="col-span-full py-16 text-center text-sm text-slate-500">
-              No saved comparisons yet. Compare colleges and click "Save Comparison"!
+              No saved comparisons yet. Compare colleges and click &quot;Save Comparison&quot;!
             </div>
           )}
         </div>

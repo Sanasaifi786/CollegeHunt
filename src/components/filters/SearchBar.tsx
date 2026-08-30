@@ -71,6 +71,7 @@ export default function SearchBar({
             onClick={() => {
               setSearchTerm(pill.query);
               onSearch(pill.query);
+              onTagClick?.(pill.query);
             }}
             className="flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3.5 py-1 text-xs font-medium text-slate-600 shadow-2xs transition hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900"
           >
