@@ -18,6 +18,11 @@ export const metadata: Metadata = {
   title: "CollegeHunt — Discover, Compare & Predict Admissions",
   description:
     "Data-driven insights to explore institutions, compare side-by-side metrics, predict admission chances, and connect with students.",
+  icons: {
+    icon: "/icon.svg",
+    shortcut: "/icon.svg",
+    apple: "/icon.svg",
+  },
 };
 
 import AuthProvider from "@/components/layout/AuthProvider";
