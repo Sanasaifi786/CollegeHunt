@@ -1,0 +1,253 @@
+// This is your Prisma schema file,
+//learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DATABASE_URL")
+}
+
+
+
+enum Role {
+  STUDENT
+  ADMIN
+}
+
+enum CollegeType {
+  GOVERNMENT
+  PRIVATE
+  DEEMED
+  AUTONOMOUS
+}
+
+// ─────────────────────────────────────────────
+// USER
+// ─────────────────────────────────────────────
+
+model User {
+  id               String            @id @default(cuid())
+  name             String
+  email            String            @unique
+  password         String
+  role             Role              @default(STUDENT)
+  avatar           String?
+  phone            String?
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+
+  reviews          Review[]
+  savedColleges    SavedCollege[]
+  savedComparisons SavedComparison[]
+  questions        Question[]
+  answers          Answer[]
+}
+
+// ─────────────────────────────────────────────
+// COLLEGE
+// ─────────────────────────────────────────────
+
+model College {
+  id              String          @id @default(cuid())
+  name            String
+  slug            String          @unique
+  description     String?
+  location        String          // Full address
+  city            String
+  state           String
+  type            CollegeType     @default(PRIVATE)
+  ranking         Int?            // Overall ranking
+  nirf            Int?            // NIRF ranking
+  establishedYear Int?
+  website         String?
+  logo            String?
+  images          String[]        // Array of image URLs
+  annualFees      Float?          // Min annual fees in INR
+  maxFees         Float?          // Max annual fees in INR
+  accreditation   String?         // NAAC grade: A++, A+, A, B++, etc.
+  approvedBy      String[]        // ["UGC", "AICTE", "MCI", "BCI"]
+  totalStudents   Int?
+  totalFaculty    Int?
+  campusArea      Float?          // in acres
+  isVerified      Boolean         @default(false)
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  courses         Course[]
+  placements      Placement[]
+  reviews         Review[]
+  savedBy         SavedCollege[]
+  cutoffs         CollegeCutoff[]
+  questions       Question[]
+}
+
+// ─────────────────────────────────────────────
+// COURSE
+// ─────────────────────────────────────────────
+
+model Course {
+  id           String          @id @default(cuid())
+  name         String          // e.g. "Computer Science & Engineering"
+  degree       String          // e.g. "B.Tech", "MBA", "MBBS", "M.Tech"
+  duration     Int             // in years
+  seats        Int?
+  fees         Float?          // Annual fees in INR
+  eligibility  String?
+  mode         String?         // "Full-time", "Part-time", "Online"
+  collegeId    String
+  college      College         @relation(fields: [collegeId], references: [id], onDelete: Cascade)
+  cutoffs      CollegeCutoff[]
+
+  @@index([collegeId])
+}
+
+// ─────────────────────────────────────────────
+// PLACEMENT
+// ─────────────────────────────────────────────
+
+model Placement {
+  id              String   @id @default(cuid())
+  year            Int
+  avgPackage      Float?   // Average package in LPA
+  highestPackage  Float?   // Highest package in LPA
+  medianPackage   Float?   // Median package in LPA
+  placementRate   Float?   // Placement % (0–100)
+  totalPlaced     Int?
+  topRecruiters   String[] // Company names array
+  collegeId       String
+  college         College  @relation(fields: [collegeId], references: [id], onDelete: Cascade)
+
+  @@unique([collegeId, year])
+  @@index([collegeId])
+}
+
+// ─────────────────────────────────────────────
+// REVIEW
+// ─────────────────────────────────────────────
+
+model Review {
+  id           String   @id @default(cuid())
+  rating       Float    // Overall rating 1–5
+  // Sub-ratings
+  academics    Float?   // 1–5
+  infrastructure Float? // 1–5
+  faculty      Float?   // 1–5
+  placement    Float?   // 1–5
+  hostel       Float?   // 1–5
+  title        String
+  content      String
+  pros         String?
+  cons         String?
+  batch        Int?     // Graduation year
+  program      String?  // Course they studied
+  verified     Boolean  @default(false)
+  helpfulCount Int      @default(0)
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  collegeId    String
+  college      College  @relation(fields: [collegeId], references: [id], onDelete: Cascade)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@unique([userId, collegeId]) // One review per user per college
+  @@index([collegeId])
+  @@index([userId])
+}
+
+// ─────────────────────────────────────────────
+// SAVED COLLEGE (Wishlist)
+// ─────────────────────────────────────────────
+
+model SavedCollege {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  collegeId String
+  college   College  @relation(fields: [collegeId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, collegeId])
+  @@index([userId])
+}
+
+
+// ─────────────────────────────────────────────
+// SAVED COMPARISON
+// ─────────────────────────────────────────────
+
+model SavedComparison {
+  id         String   @id @default(cuid())
+  name       String?  // Optional label, e.g. "Top IITs for CSE"
+  collegeIds String[] // Array of college IDs (2–4 max)
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+
+  @@index([userId])
+}
+
+// ─────────────────────────────────────────────
+// COLLEGE CUTOFF
+// ─────────────────────────────────────────────
+
+model CollegeCutoff {
+  id          String  @id @default(cuid())
+  exam        String  // "JEE Main", "JEE Advanced", "NEET", "CAT", "XAT", "GATE"
+  category    String  // "General", "OBC", "SC", "ST", "EWS", "PwD"
+  cutoffScore Float?  // Score cutoff
+  cutoffRank  Int?    // Rank cutoff (for JEE, NEET)
+  cutoffPercentile Float? // Percentile cutoff (for CAT, XAT)
+  round       String? // "Round 1", "Round 2", "Final"
+  year        Int
+  collegeId   String
+  college     College  @relation(fields: [collegeId], references: [id], onDelete: Cascade)
+  courseId    String?
+  course      Course?  @relation(fields: [courseId], references: [id])
+
+  @@index([collegeId])
+  @@index([exam, year])
+}
+
+// ─────────────────────────────────────────────
+// Q&A — QUESTION
+// ─────────────────────────────────────────────
+
+model Question {
+  id        String   @id @default(cuid())
+  title     String
+  content   String
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  collegeId String
+  college   College  @relation(fields: [collegeId], references: [id], onDelete: Cascade)
+  answers   Answer[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([collegeId])
+  @@index([userId])
+}
+
+// ─────────────────────────────────────────────
+// Q&A — ANSWER
+// ─────────────────────────────────────────────
+
+model Answer {
+  id          String   @id @default(cuid())
+  content     String
+  isAccepted  Boolean  @default(false)
+  helpfulCount Int     @default(0)
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  questionId  String
+  question    Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([questionId])
+  @@index([userId])
+}
