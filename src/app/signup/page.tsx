@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { GraduationCap, ArrowRight, Lock, Mail, User } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
 
 export default function SignupPage() {
   const router = useRouter();
@@ -40,8 +41,20 @@ export default function SignupPage() {
       if (!res.ok) {
         setError(data.error || "Failed to create account");
         setLoading(false);
-      } else {
+        return;
+      }
+
+      // Automatically log the new user in and navigate directly to home
+      const loginRes = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
+      });
+
+      if (loginRes?.error) {
         router.push("/login?registered=true");
+      } else {
+        window.location.href = "/";
       }
     } catch {
       setError("An unexpected error occurred");

@@ -17,6 +17,23 @@ export default function Navbar() {
     setMounted(true);
   }, []);
 
+  const handleLogout = async () => {
+    try {
+      await signOut({ redirect: false });
+    } catch {
+      // Ignore client nextauth error and continue cookie purge
+    }
+
+    try {
+      await fetch("/api/auth/logout", { method: "POST" });
+    } catch {
+      // Ignore network error and proceed to navigate
+    }
+
+    // Force hard refresh to reset all state and session cleanly
+    window.location.href = "/";
+  };
+
   const navLinks = [
     { name: "Discovery", href: "/", icon: Compass },
     {
@@ -111,7 +128,7 @@ export default function Navbar() {
                 <span className="max-w-[100px] truncate">{session.user.name || "Student"}</span>
               </div>
               <button
-                onClick={() => signOut({ callbackUrl: "/" })}
+                onClick={handleLogout}
                 className="flex h-8 w-8 items-center justify-center rounded-full text-slate-400 hover:bg-rose-50 hover:text-rose-600 transition"
                 title="Sign Out"
               >
